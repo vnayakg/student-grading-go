@@ -1,5 +1,13 @@
 package main
 
+import (
+	"encoding/csv"
+	"fmt"
+	"io"
+	"os"
+	"strconv"
+)
+
 type Grade string
 
 const (
@@ -20,8 +28,73 @@ type studentStat struct {
 	grade      Grade
 }
 
-func parseCSV(filePath string) []student {
-	return nil
+func parseCSV(filePath string) ([]student, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("error opening file: %v", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	//skip csv header
+	if _, err := reader.Read(); err != nil {
+		return nil, fmt.Errorf("reading header: %v", err)
+	}
+
+	var students []student
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("reading record: %v", err)
+		}
+
+		student, err := parseStudentRecord(record)
+		if err != nil {
+			fmt.Printf("skipping invalid record: %v", err)
+			continue
+		}
+
+		students = append(students, student)
+	}
+
+	return students, nil
+}
+
+func parseStudentRecord(record []string) (student, error) {
+	if len(record) < 7 {
+		return student{}, fmt.Errorf("incomplete record")
+	}
+
+	test1, err := strconv.Atoi(record[3])
+	if err != nil {
+		return student{}, fmt.Errorf("invalid Test1 score: %v", err)
+	}
+	test2, err := strconv.Atoi(record[4])
+	if err != nil {
+		return student{}, fmt.Errorf("invalid Test2 score: %v", err)
+	}
+	test3, err := strconv.Atoi(record[5])
+	if err != nil {
+		return student{}, fmt.Errorf("invalid Test3 score: %v", err)
+	}
+	test4, err := strconv.Atoi(record[6])
+	if err != nil {
+		return student{}, fmt.Errorf("invalid Test4 score: %v", err)
+	}
+
+	return student{
+		firstName:  record[0],
+		lastName:   record[1],
+		university: record[2],
+		test1Score: test1,
+		test2Score: test2,
+		test3Score: test3,
+		test4Score: test4,
+	}, nil
 }
 
 func calculateGrade(students []student) []studentStat {
