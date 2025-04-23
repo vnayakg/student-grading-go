@@ -98,7 +98,33 @@ func parseStudentRecord(record []string) (student, error) {
 }
 
 func calculateGrade(students []student) []studentStat {
-	return nil
+	var studentSet []studentStat
+
+	for _, student := range students {
+		finalScore := student.getFinalScore()
+		grade := student.getGrade(finalScore)
+
+		studentSet = append(studentSet, studentStat{student, finalScore, grade})
+	}
+
+	return studentSet
+}
+
+func (s *student) getFinalScore() float32 {
+	return float32(s.test1Score+s.test2Score+s.test3Score+s.test4Score) / 4
+}
+
+func (s *student) getGrade(finalScore float32) Grade {
+	switch {
+	case finalScore >= 70:
+		return A
+	case finalScore >= 50 && finalScore < 70:
+		return B
+	case finalScore >= 35 && finalScore < 50:
+		return C
+	default:
+		return F
+	}
 }
 
 func findOverallTopper(gradedStudents []studentStat) studentStat {
