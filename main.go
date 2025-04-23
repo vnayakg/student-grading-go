@@ -128,7 +128,16 @@ func (s *student) getGrade(finalScore float32) Grade {
 }
 
 func findOverallTopper(gradedStudents []studentStat) studentStat {
-	return studentStat{}
+	var topperScore float32 = 0
+	var topperStudent studentStat
+
+	for _, gradedStudent := range gradedStudents {
+		if gradedStudent.finalScore > topperScore {
+			topperScore = gradedStudent.finalScore
+			topperStudent = gradedStudent
+		}
+	}
+	return topperStudent
 }
 
 func findTopperPerUniversity(gs []studentStat) map[string]studentStat {
