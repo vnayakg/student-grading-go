@@ -140,6 +140,15 @@ func findOverallTopper(gradedStudents []studentStat) studentStat {
 	return topperStudent
 }
 
-func findTopperPerUniversity(gs []studentStat) map[string]studentStat {
-	return nil
+func findTopperPerUniversity(gradedStudents []studentStat) map[string]studentStat {
+	toppersPerUni := make(map[string]studentStat)
+
+	for _, gradedStudent := range gradedStudents {
+		student, isPresent := toppersPerUni[gradedStudent.university]
+
+		if !isPresent || gradedStudent.finalScore > student.finalScore {
+			toppersPerUni[gradedStudent.university] = gradedStudent
+		}
+	}
+	return toppersPerUni
 }
