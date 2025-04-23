@@ -58,35 +58,35 @@ func parseCSV(filePath string) ([]student, error) {
 			continue
 		}
 
-		students = append(students, student)
+		students = append(students, *student)
 	}
 
 	return students, nil
 }
 
-func parseStudentRecord(record []string) (student, error) {
+func parseStudentRecord(record []string) (*student, error) {
 	if len(record) < 7 {
-		return student{}, fmt.Errorf("incomplete record")
+		return nil, fmt.Errorf("incomplete record")
 	}
 
 	test1, err := strconv.Atoi(record[3])
 	if err != nil {
-		return student{}, fmt.Errorf("invalid Test1 score: %v", err)
+		return nil, fmt.Errorf("invalid Test1 score: %v", err)
 	}
 	test2, err := strconv.Atoi(record[4])
 	if err != nil {
-		return student{}, fmt.Errorf("invalid Test2 score: %v", err)
+		return nil, fmt.Errorf("invalid Test2 score: %v", err)
 	}
 	test3, err := strconv.Atoi(record[5])
 	if err != nil {
-		return student{}, fmt.Errorf("invalid Test3 score: %v", err)
+		return nil, fmt.Errorf("invalid Test3 score: %v", err)
 	}
 	test4, err := strconv.Atoi(record[6])
 	if err != nil {
-		return student{}, fmt.Errorf("invalid Test4 score: %v", err)
+		return nil, fmt.Errorf("invalid Test4 score: %v", err)
 	}
 
-	return student{
+	return &student{
 		firstName:  record[0],
 		lastName:   record[1],
 		university: record[2],
